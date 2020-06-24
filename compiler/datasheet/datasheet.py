@@ -19,6 +19,35 @@ class datasheet():
     def __init__(self, identifier):
         self.name = identifier
         self.html = ""
+        self.python = ""
+
+    def generate_python(self):
+        """
+        Generate Python table
+        """
+        #comment table rows which we may want to enable after compile time
+        comments = ['.db']
+
+        # Print object header
+        self.python = 'datasheet = {\n'
+
+        # Ports and configuration
+        self.python += self.io_table.to_python("Ports and Configuration", comments)
+
+        # Operation condition information
+        self.python += self.operating_table.to_python("Operating Conditions", comments)
+
+        # Timing data
+        self.python += self.timing_table.to_python("Timing Data", comments)
+
+        # Power data
+        self.python += self.power_table.to_python("Power Data", comments)
+
+        # Corner information (exclude it for now)
+        #self.python += self.corners_table.to_python("Characterization Corners", comments)
+
+        # Print object footer
+        self.python += '}'
 
     def generate_html(self):
         """

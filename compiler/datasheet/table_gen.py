@@ -52,6 +52,7 @@ class table_gen:
         html += '</tr>'
         html += '</tbody>'
         return html
+
     def sort(self):
         self.rows[1:] = sorted(self.rows[1:], key=lambda x : x[0])
 
@@ -64,3 +65,55 @@ class table_gen:
         html += '</table>\n'
 
         return html
+
+    def _represents_int(self, val):
+        try:
+            int(val)
+            return True
+        except ValueError:
+            return False
+
+    def _represents_float(self, val):
+        try:
+            float(val)
+            return True
+        except ValueError:
+            return False
+
+    def gen_object_body(self, comments):
+        """ Generate Python object body """
+        python = ''
+
+        for row in self.rows[1:]:
+            header = self.rows[0][1:]
+            name, row = row[0], row[1:]
+
+            comment_char = '#'
+            if row[0] not in comments:
+                comment_char = ''
+
+            python += '{0}        "{1}": {{\n'.format(comment_char, name)
+            for i, col in enumerate(row):
+                if len(col) == 0:
+                    # Column does not contain any kind of value
+                    continue
+                elif self._represents_int(col):
+                    col = int(col)
+                elif self._represents_float(col):
+                    col = float(col)
+                else:
+                    col = '"{0}"'.format(col)
+                python += '{0}            "{1}": {2},\n'.format(comment_char,
+                                                                header[i], col)
+            python += '{0}        }},\n'.format(comment_char)
+
+        return python
+
+    def to_python(self, title, comments):
+        """ Wrtites table_gen object to python object """
+        python = ''
+        python += '    "{0}": {{\n'.format(title)
+        python += self.gen_object_body(comments)
+        python += '    },\n'
+
+        return python

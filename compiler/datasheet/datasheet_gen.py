@@ -645,3 +645,8 @@ class datasheet_gen():
             with open(name, 'w+') as f:
                 sheets.generate_html()
                 f.write(sheets.html)
+            pre, ext = os.path.splitext(name)
+            name_py = pre + "_objects.py"
+            with open(name_py, 'w+') as f:
+                sheets.generate_python()
+                f.write(sheets.python)
